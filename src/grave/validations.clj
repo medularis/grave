@@ -126,7 +126,7 @@
 
 (defn form-validator
   "Wrap a scope with a validation to be used with if-valid-form."
-  [scope param-key validator]
+  [scope validator param-key opts]
   (wrap
    scope
    (fn [handler]
@@ -139,7 +139,8 @@
                               (transform-assocs validator value true))]
              (binding [*validation* validation]
                (handler request)))
-           (throw (Exception. "Parameter can't be nil"))))))))
+           (throw (Exception. "Parameter can't be nil"))))))
+   opts))
 
 (defmacro if-valid-form
   "Use it when a wrap-form-validator is applied.

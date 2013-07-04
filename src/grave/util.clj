@@ -28,19 +28,18 @@
          ~@body)))
 
 (defn exists
-  [scope handler actions resource-name & [response]]
+  [scope handler resource-name & [opts]]
   (wrap scope
         (fn [h]
           (fn [r]
             (if-let [resource (handler r)]
               (h (assoc-globals r {resource-name resource}))
-              (or response
+              (or (:response opts)
                   (not-found "Not Found")))))
-        {:actions actions
-         :name    :exists}))
+        opts))
 
 (defn parse-route-params
-  [scope route-params opts]
+  [scope route-params & [opts]]
   (wrap scope
         (fn [h]
           (fn [r]
@@ -54,4 +53,4 @@
                            params))
                        (:params r)
                        route-params)))))
-        {}))
+        opts))

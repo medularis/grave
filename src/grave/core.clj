@@ -34,6 +34,7 @@ It includes compojure's site handler usign the same options map, see http://weav
       (if-> i18n? wrap-i18n-middleware)
       (if-> anti-forgery? wrap-anti-forgery)
       (if-> before before)
+      wrap-request
       (site opts)))
 
 (defmacro defapp
