@@ -3,37 +3,38 @@
         hiccup.def
         hiccup.form
         [hiccup.core :exclude (h)]
-        [clj-simple-form.form-scope :only (value-for)]))
+        [clj-simple-form.form-scope :only (value-for *form-values*)]))
 
 (defmacro with-many-nested-form-scope
   [coll item partial]
-  `(let [resolved# (ns-resolve *ns* 'with-nested-form-scope)]
-     (resolved#
+  (let [resolved (ns-resolve *ns* 'with-nested-form-scope)]
+    `(~resolved
       ~coll
-      (map-indexed
-       (fn [i# value#]
-         (let [x# (keyword (str i#))]
-           (resolved# x#
-                      (resolved# ~item
-                                 (~partial)))))
-       (value-for ~coll)))))
+      (doall
+       (map-indexed
+        (fn [i# value#]
+          (let [x# (keyword (str i#))]
+            (~resolved x#
+                       (~resolved ~item
+                                  (~partial)))))
+        *form-values*)))))
 
 (defmacro make-partial
-  [coll item partial]
-  `(let [resolved# (ns-resolve *ns* 'with-nested-form-scope)]
-     (->> (resolved# ~item (~partial))
-          (resolved# :new-item)
-          (resolved# ~coll)
-          html)))
+  [resolved coll item partial]
+  `(~resolved ~coll
+              (~resolved :new-item
+                         (~resolved ~item (~partial)))))
 
-(defn add-assoc
+(defmacro add-assoc
   [coll item partial class & content]
-  [:a
-   {:class         (str class " add-assoc")
-    :href          "#"
-    :data-partial  (make-partial coll item partial)
-    :data-selector (keyword (str "#" (name coll)))}
-   content])
+  (let [resolved (ns-resolve *ns* 'with-nested-form-scope)]
+    `(do
+       [:a
+        {:class         (str ~class " add-assoc")
+         :href          "#"
+         :data-partial  (html (make-partial ~resolved ~coll ~item ~partial))
+         :data-selector (keyword (str "#" (name ~coll)))}
+        ~@content])))
 
 (defelem remove-assoc
   [class & content]

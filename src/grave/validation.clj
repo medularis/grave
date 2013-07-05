@@ -41,7 +41,7 @@
     [:_base]))
 
 (defn- form-errors
-  [validator errors]
+  [errors validator]
   (reduce
    (fn [errors {:keys [field message]}]
      (assoc-in errors (resolve-field field validator) message))
@@ -89,6 +89,10 @@
         (:assocs validator))
        (merge value)))
 
+(defn to-form-value
+  [validator value]
+  (transform-assocs validator value true))
+
 (defn validates-email
   "Validate email format"
   [field]
@@ -126,7 +130,7 @@
 
 (defn form-validator
   "Wrap a scope with a validation to be used with if-valid-form."
-  [scope validator param-key opts]
+  [scope validator param-key & [opts]]
   (wrap
    scope
    (fn [handler]
@@ -134,9 +138,11 @@
        (let [value (get-in request [:params param-key])]
          (if value
            (let [value      (transform-assocs validator value)
-                 validation (assoc (validator value)
-                              :form-value
-                              (transform-assocs validator value true))]
+                 validation (-> (validate validator value)
+                                (assoc
+                                    :form-value
+                                  (transform-assocs validator value true))
+                                (update-in [:errors] form-errors validator))]
              (binding [*validation* validation]
                (handler request)))
            (throw (Exception. "Parameter can't be nil"))))))

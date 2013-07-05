@@ -27,15 +27,13 @@
      (-> ~value
          ~@body)))
 
-(defn exists
+(defn find-resource
   [scope handler resource-name & [opts]]
   (wrap scope
         (fn [h]
           (fn [r]
             (if-let [resource (handler r)]
-              (h (assoc-globals r {resource-name resource}))
-              (or (:response opts)
-                  (not-found "Not Found")))))
+              (h (assoc-globals r {resource-name resource})))))
         opts))
 
 (defn parse-route-params
