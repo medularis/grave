@@ -1,10 +1,17 @@
-(ns grave.form
-  (:use rip.core
+(ns grave.views
+  (:use grave.util
+        rip.core
         hiccup.def
         hiccup.form
         [hiccup.core :exclude (h)]
         [clj-simple-form.form-scope :only (value-for *form-values*)]
         ring.util.anti-forgery))
+
+(defmacro defview
+  [name args & body]
+  `(defn ~name
+     ~args
+     (*layout* ~@body)))
 
 (defmacro form-for
   [name action opts & body]

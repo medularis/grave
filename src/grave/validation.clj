@@ -40,7 +40,7 @@
          (make-path validator))
     [:_base]))
 
-(defn- form-errors
+(defn form-errors
   [errors validator]
   (reduce
    (fn [errors {:keys [field message]}]
@@ -60,7 +60,7 @@
    []
    values))
 
-(defn- transform-assocs
+(defn transform-assocs
   [validator value & [after?]]
   (->> (reduce
         (fn [value* [name {:keys [rel validator item-name]}]]
@@ -127,26 +127,6 @@
        (fn [_]
          {:field   (keyword (str (name rel) "._base"))
           :message (t :errors.messages/unique-item)}))))
-
-(defn form-validator
-  "Wrap a scope with a validation to be used with if-valid-form."
-  [scope validator param-key & [opts]]
-  (wrap
-   scope
-   (fn [handler]
-     (fn [request]
-       (let [value (get-in request [:params param-key])]
-         (if value
-           (let [value      (transform-assocs validator value)
-                 validation (-> (validate validator value)
-                                (assoc
-                                    :form-value
-                                  (transform-assocs validator value true))
-                                (update-in [:errors] form-errors validator))]
-             (binding [*validation* validation]
-               (handler request)))
-           (throw (Exception. "Parameter can't be nil"))))))
-   opts))
 
 (defmacro if-valid-form
   "Use it when a wrap-form-validator is applied.

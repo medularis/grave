@@ -3,21 +3,16 @@
         rip.util
         rip.validation
         rip.middleware
-        ring.util.response))
+        ring.util.response
+        hiccup.page))
 
-(defmacro defview
-  [name layout args & body]
-  `(defn ~name
-     ~args
-     (~layout ~@body)))
+(def ^:dynamic *layout* identity)
 
-(defmacro edit
-  [scope & body]
-  `(GET ~scope {:name :edit :path "/:id/edit"} ~@body))
-
-(defmacro new*
-  [scope & body]
-  `(GET ~scope {:name :new :path "/new"} ~@body))
+(defn wrap-if
+  [handler pred wrapper & args]
+  (if pred
+    (apply wrapper handler args)
+    handler))
 
 (defmacro if->
   ""
@@ -27,28 +22,7 @@
      (-> ~value
          ~@body)))
 
-(defn find-resource
-  [scope handler resource-name & [opts]]
-  (wrap scope
-        (fn [h]
-          (fn [r]
-            (if-let [resource (handler r)]
-              (h (assoc-globals r {resource-name resource})))))
-        opts))
-
-(defn parse-route-params
-  [scope route-params & [opts]]
-  (wrap scope
-        (fn [h]
-          (fn [r]
-            (h (assoc r :params
-                      (reduce
-                       (fn [params [param type]]
-                         (if-let [value (param params)]
-                           (assoc params
-                             param
-                             ((parsers type) value))
-                           params))
-                       (:params r)
-                       route-params)))))
-        opts))
+(defn action-for
+  [route & args]
+  (let [{:keys [href method]} (apply link-for args)]
+    [(keyword (.toLowerCase method)) href]))
