@@ -3,9 +3,9 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[rip "0.0.10"]
+  :dependencies [[sebastiansen/rip "0.0.10"]
 
-                 [korma "0.3.0-RC5"]
+                 [sebastiansen/korma "0.3.1"]
 
                  [org.clojure/clojure "1.5.1"]
 
