@@ -26,7 +26,10 @@
 
 (defelem form-to+
   [[method action] & body]
-  (form-to [method action] body))
+  (form-to
+   [method action]
+   (anti-forgery-field)
+   body))
 
 (defmacro with-many-nested-form-scope
   [coll item partial]
