@@ -24,6 +24,10 @@
                          (or (:errors ~opts) {})
                          ~@body))))
 
+(defelem form-to+
+  [[method action] & body]
+  (form-to [method action] body))
+
 (defmacro with-many-nested-form-scope
   [coll item partial]
   (let [resolved (ns-resolve *ns* 'with-nested-form-scope)]
@@ -69,3 +73,7 @@
   []
   (if (value-for :id)
     (hidden-field :id)))
+
+(defn request-flash
+  []
+  (:flash *request*))

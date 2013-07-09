@@ -24,5 +24,5 @@
 
 (defn action-for
   [route & args]
-  (let [{:keys [href method]} (apply link-for args)]
+  (let [{:keys [href method]} (apply link-for route args)]
     [(keyword (.toLowerCase method)) href]))
