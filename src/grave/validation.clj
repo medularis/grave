@@ -129,14 +129,16 @@
           :message (t :errors.messages/unique-item)}))))
 
 (defmacro if-valid-form
-  "Use it when a wrap-form-validator is applied.
-Bindings: [validated-value error form-value]"
-  ([bindings then]
-     `(if-valid-form ~bindings ~then nil))
-  ([bindings then else & oldform]
-     `(let [~bindings [(:value *validation*)
-                       (:errors *validation*)
-                       (:form-value *validation*)]]
-        (if (:valid? *validation*)
-          ~then
-          ~else))))
+  "Use it when a wrap-form-validator is applied. Bindings: [value error]"
+  ([validator value bindings then]
+     `(if-valid-form validator value ~bindings ~then nil))
+  ([validator value bindings then else & oldform]
+     (let [validation (-> (validate validator (transform-assocs validator value))
+                          (update-in [:errors] form-errors validator))]
+       `(let [~bindings  [(if (:valid? ~validation)
+                            (:value ~validation)
+                            (transform-assocs ~validator ~value true))
+                          (:errors ~validation)]]
+          (if (:valid? ~validation)
+            ~then
+            ~else)))))

@@ -6,7 +6,7 @@
         ring.util.response
         hiccup.page))
 
-(def ^:dynamic *layout* identity)
+(def ^:dynamic *layout* (fn [& content] (html5 content)))
 
 (defn wrap-if
   [handler pred wrapper & args]
