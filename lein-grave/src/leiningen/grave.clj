@@ -1,17 +1,18 @@
 (ns leiningen.grave
   (:use clojure.java.io
         [clojure.string :only (split)]
-        [leinjacker.eval :only (eval-in-project)]
-        [leiningen.new.templates :only (renderer
-                                        ->files
-                                        sanitize-ns
-                                        name-to-path
-                                        project-name)]))
+        stencil.core))
 
 (def type->input
-  {nil       "text-field"
-   "boolean" "check-box"
-   "text"    "text-field"})
+  {"boolean" "check-box"
+   "text"    "text-area"})
+
+(defn ->files
+  [data & files]
+  (doseq [[path source] files]
+    (let [path (render-string path data)]
+      (.mkdirs (.getParentFile (file path)))
+      (copy source (file path)))))
 
 (defn gen
   [project [engine plural singular & fields]]
@@ -20,28 +21,35 @@
                   (let [[field type] (split field-type #":")]
                     {:name    field
                      :type    type
-                     :input   (type->input field)
+                     :input   (type->input type "text-field")
                      :not-string? (and type (not= type "text"))}))
                 fields)
-        render (renderer "templates")
-        data   {:name     "test"
-                :project  (:name project)
+        data   {:project  (:name project)
                 :plural   plural
                 :singular singular
-                :params   fields}]
-    (->files data
+                :fields   fields}]
+    (if (= engine "korma")
+      (let [entities-path (render-string "{{project}}/models/entities.clj" data)
+            new-entity    (render-string "\n\n(defentity {{plural}})" data)]
+        (if (.exists (file entities-path))
+          (spit entities-path new-entity :append true)
+          (->files
+           data
+           ["{{project}}/models/entities.clj"
+            (str (render-file "templates/entities.clj" data)
+                 new-entity)]))))
+    (->files
+     data
      ["{{project}}/handlers/{{plural}}.clj"
-      (render "handlers.clj" data)]
+      (render-file "templates/handlers.clj" data)]
      ["{{project}}/views/{{plural}}.clj"
-      (render "views.clj" data)]
+      (render-file "templates/views.clj" data)]
      (case engine
        "korma"
        ["{{project}}/models/{{plural}}.clj"
-        (render "korma-model.clj")]
+        (render-file "templates/korma-model.clj" data)]
        ["{{project}}/models/{{plural}}.clj"
-        (render "model.clj")]))))
-
-(->files )
+        (render-file "templates/model.clj" data)]))))
 
 (defn grave
   [project cmd & args]

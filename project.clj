@@ -13,4 +13,6 @@
 
                  [com.taoensso/tower "1.7.1"]
 
-                 [ring-anti-forgery "0.2.1"]])
+                 [ring-anti-forgery "0.2.1"]
+
+                 [lib-noir "0.6.6"]])

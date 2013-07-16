@@ -13,7 +13,9 @@
        'grave.handlers
        'grave.validation
        'grave.util
-       '[taoensso.tower :only (t)]))
+       '[taoensso.tower :only (t)]
+       '[ring.util.response :exclude (response)])
+  (require '[noir.response :as response]))
 
 (defn views-ns
   [& [{:keys [form-engine]}]]

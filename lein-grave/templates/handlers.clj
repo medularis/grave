@@ -1,15 +1,13 @@
 (ns {{project}}.handlers.{{plural}}
   (:use grave.core)
-  (:require [my-app.views.{{plural}} :as view]
-            [my-app.views.layouts :as layouts]
-            [my-app.model :as model]))
+  (:require [{{project}}.views.{{plural}} :as view]
+            [{{project}}.views.layouts :as layouts]
+            [{{project}}.model :as model]))
 
 (handlers-ns)
 
-(defvalidator {{singular}}-validator
-  {{#fields}}
-  (field :{{name}} {{#not-string?}} (parse-to :{{type}}) {{/not-string?}})
-  {{/fields}})
+(defvalidator {{singular}}-validator{{#fields}}
+  (field :{{name}}{{#not-string?}} (parse-to :{{type}}){{/not-string?}}){{/fields}})
 
 (defresources {{plural}}
   (with-layout layouts/default)
@@ -20,21 +18,21 @@
 
   (index
    [page per_page]
-   (respond-to
+   (dispatch
     :html (view/index (model/all page per_page) page per_page)
-    :json (render-json (model/all page per_page))))
+    :json (response/json (model/all page per_page))))
 
   (new*
    []
-   (respond-to
+   (dispatch
     :html (view/new* (model/build))
-    :json (render-json (model/build))))
+    :json (response/json (model/build))))
 
   (show
    [{{singular}}*]
-   (respond-to
+   (dispatch
     :html (view/show {{singular}}*)
-    :json (render-json {{singular}}*)))
+    :json (response/json {{singular}}*)))
 
   (make
    [{{singular}}]
@@ -42,14 +40,14 @@
     ({{singular}}-validator {{singular}}) [{{singular}} errors]
     (let [{id :id} (model/create {{singular}})
           location (path-for :{{plural}} [:show] id)]
-      (respond-to
+      (dispatch
        :html (-> (redirect-after-post location)
                  (flash (t :messages.{{plural}}/created)))
-       :json (-> (render-json {{singular}})
-                 (created location))))
-    (respond-to
+       :json (->> (response/json {{singular}})
+                  (created location))))
+    (dispatch
      :html (view/new* {{singular}} errors)
-     :json (-> (render-json errors) unprocessable-entity))))
+     :json (unprocessable-entity (response/json errors)))))
 
   (edit [{{singular}}*] (view/edit {{singular}}*))
 
@@ -62,15 +60,15 @@
       (respond-to
        :html (-> (redirect (path-for :{{plural}} [:show] (:id {{singular}})))
                  (flash (t :messages.{{plural}}/updated)))
-       :json no-content))
-    (respond-to
+       :json response/empty))
+    (dispatch
      :html (view/edit {{singular}} errors)
-     :json (-> (render-json errors) unprocessable-entity))))
+     :json (unprocessable-entity (response/json errors)))))
 
   (destroy
    [id]
    (model/destroy id)
-   (respond-to
+   (dispatch
     :html (-> (redirect (path-for :{{plural}} [:index]))
               (flash (t :messages.{{plural}}/deleted)))
-    :json no-content)))
+    :json response/empty)))

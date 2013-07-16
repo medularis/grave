@@ -6,7 +6,9 @@
         rip.middleware
         ring.util.response
         hiccup.page
-        grave.validation))
+        grave.validation)
+  (:require [com.twinql.clojure.conneg :as conneg]
+            [noir.response :as resp]))
 
 (defmacro edit
   [scope & body]
@@ -67,3 +69,29 @@
                (handler request)))
            (throw (Exception. "Parameter can't be nil"))))))
    opts))
+
+(defmacro dispatch
+  [& clauses]
+  (let [ctypes (set
+                (conneg/best-allowed-content-type
+                 (get-in *request*
+                         [:headers "accept"] "text/plain")))]
+    `(condp (fn [ctype# ctypes#]
+              (contains? ctypes# (name ctype#))) ~ctypes
+       ~@clauses)))
+
+(defn created
+  [utl & [response]]
+  (-> (or response {:body ""})
+      (assoc-in [:headers "Location"] url)
+      (assoc :status 201)))
+
+(defn flash
+  [value & [response]]
+  (-> (or response {:body ""})
+      (assoc :flash value)))
+
+(defn unprocessable-entity
+  [& [response]]
+  (-> (or response {:body ""})
+      (assoc :status 422)))
