@@ -5,6 +5,7 @@
 
 (defview index
   [{{plural}}]
+  [:h2 "{{plural}}"]
   [:table
    [:thead
     [:tr{{#fields}}
@@ -16,6 +17,7 @@
 
 (defview show
   [{{singular}}]
+  [:h2 "{{singular}}"]
   [:dl{{#fields}}
    [:dt (t :{{plural}}.fields/{{name}})] [:dd (:{{name}} {{singular}})]{{/fields}}]
   (link-to (path-for :{{plural}} [:edit] (:id {{singular}})) (t :buttons/edit)))
@@ -29,10 +31,10 @@
 
 (defview new*
   [{{singular}} & [errors]]
-  [:h1 (t :{{plural}}/new)]
+  [:h2 (t :{{plural}}/new)]
   (form {{singular}} errors (action-for :{{plural}} [:make])))
 
 (defview edit
   [{{singular}} & [errors]]
-  [:h1 (t :{{plural}}/edit)]
+  [:h2 (t :{{plural}}/edit)]
   (form {{singular}} errors (action-for :{{plural}} [:change] (:id {{singular}}))))

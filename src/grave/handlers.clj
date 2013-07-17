@@ -74,7 +74,8 @@
   [& clauses]
   `(let [ctypes# (set
                   (conneg/best-allowed-content-type
-                   (get-in *request* [:headers "accept"] "text/plain")))]
+                   (get-in *request* [:headers "accept"] "text/plain")
+                   #{"text/html" "application/json" "application/xml"}))]
      (condp (fn [ctype# ctypes#]
               (contains? ctypes# (name ctype#))) ctypes#
        ~@clauses)))
