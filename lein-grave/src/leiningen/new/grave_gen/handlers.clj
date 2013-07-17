@@ -2,7 +2,7 @@
   (:use grave.core)
   (:require [{{project}}.views.{{plural}} :as view]
             [{{project}}.views.layouts :as layouts]
-            [{{project}}.model :as model]))
+            [{{project}}.models.{{plural}} :as model]))
 
 (handlers-ns)
 
@@ -57,7 +57,7 @@
     ({{singular}}-validator {{singular}}) [{{singular}} errors]
     (do
       (model/update-fields id {{singular}})
-      (respond-to
+      (dispatch
        :html (-> (redirect (path-for :{{plural}} [:show] (:id {{singular}})))
                  (flash (t :messages.{{plural}}/updated)))
        :json response/empty))

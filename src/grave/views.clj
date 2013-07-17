@@ -5,7 +5,8 @@
         hiccup.form
         [hiccup.core :exclude (h)]
         [clj-simple-form.form-scope :only (value-for *form-values*)]
-        ring.util.anti-forgery))
+        ring.util.anti-forgery
+        [ring.middleware.anti-forgery :only (*anti-forgery-token*)]))
 
 (defmacro defview
   [name args & body]
@@ -80,3 +81,8 @@
 (defn request-flash
   []
   (:flash *request*))
+
+(defn meta-tags
+  []
+  (html [:meta {:name "anti-forgery-token"
+                :content *anti-forgery-token*}]))

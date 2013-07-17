@@ -72,16 +72,15 @@
 
 (defmacro dispatch
   [& clauses]
-  (let [ctypes (set
-                (conneg/best-allowed-content-type
-                 (get-in *request*
-                         [:headers "accept"] "text/plain")))]
-    `(condp (fn [ctype# ctypes#]
-              (contains? ctypes# (name ctype#))) ~ctypes
+  `(let [ctypes# (set
+                  (conneg/best-allowed-content-type
+                   (get-in *request* [:headers "accept"] "text/plain")))]
+     (condp (fn [ctype# ctypes#]
+              (contains? ctypes# (name ctype#))) ctypes#
        ~@clauses)))
 
 (defn created
-  [utl & [response]]
+  [url & [response]]
   (-> (or response {:body ""})
       (assoc-in [:headers "Location"] url)
       (assoc :status 201)))

@@ -18,7 +18,7 @@
   [{{singular}}]
   [:dl{{#fields}}
    [:dt (t :{{plural}}.fields/{{name}})] [:dd (:{{name}} {{singular}})]{{/fields}}]
-  (link-to (path-for :{{plural}} [:edit] id) (t :buttons/edit)))
+  (link-to (path-for :{{plural}} [:edit] (:id {{singular}})) (t :buttons/edit)))
 
 (defn form
   [{{singular}} errors action]

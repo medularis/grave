@@ -3,6 +3,6 @@
           korma.db
           {{project}}.config))
 
-(defdb database dbspec)
+(defdb database db-spec)
 
 ;; Entities
