@@ -9,6 +9,7 @@
         data {:name name
               :title (.toUpperCase name)
               :sanitized (name-to-path name)}]
+    (println (str "Generating a grave application called " name "."))
     (->files data
              ;; main
              ["README.md" (render "README.md" data)]

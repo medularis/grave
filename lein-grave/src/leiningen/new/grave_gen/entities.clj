@@ -1,8 +1,8 @@
 (ns {{project}}.models.entities
-    (:use korma.code
+    (:use korma.core
           korma.db
           {{project}}.config))
 
-(defdb database db-spec)
+(defdb db db-spec)
 
 ;; Entities

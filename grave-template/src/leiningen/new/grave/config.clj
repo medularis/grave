@@ -1,6 +1,7 @@
 (ns {{name}}.config
     (:use korma.db
-          grave.util))
+          grave.util
+          cfg.current))
 
 (def config
   {
@@ -17,4 +18,4 @@
   ;;     (mysql {:user ...})
   ;;     (postgresql {:user ...})
   ;;     (sqlite {:user ...})
-  (postgres (load-config "database.edn")))
+  (postgres ((project :db) (load-config "database.edn"))))

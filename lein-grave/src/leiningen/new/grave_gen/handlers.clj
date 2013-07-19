@@ -1,8 +1,8 @@
 (ns {{project}}.handlers.{{plural}}
-  (:use grave.core)
-  (:require [{{project}}.views.{{plural}} :as view]
-            [{{project}}.views.layouts :as layouts]
-            [{{project}}.models.{{plural}} :as model]))
+    (:use grave.core)
+    (:require [{{project}}.views.{{plural}} :as view]
+              [{{project}}.views.layouts :as layouts]
+              [{{project}}.models.{{plural}} :as model]))
 
 (handlers-ns)
 
@@ -12,14 +12,15 @@
 (defresources {{plural}}
   (with-layout layouts/default)
 
-  (with-find-resource :{{singular}}*
-    (h [id] (model/find-one {:id id}))
-    {:actions [:show :edit :make :change :destroy]})
+  (with-find-resource
+    (h [id] (model/find-one id))
+    :{{singular}}*
+    {:actions [:show :edit :change :destroy]})
 
   (index
    [page per_page]
    (dispatch
-    :html (view/index (model/all page per_page) page per_page)
+    :html (view/index (model/all page per_page))
     :json (response/json (model/all page per_page))))
 
   (new*
@@ -37,12 +38,12 @@
   (make
    [{{singular}}]
    (if-valid
-    ({{singular}}-validator {{singular}}) [{{singular}} errors]
-    (let [{id :id} (model/create {{singular}})
-          location (path-for :{{plural}} [:show] id)]
+    (validate {{singular}}-validator {{singular}}) [{{singular}} errors]
+    (let [user     (model/create {{singular}})
+          location (path-for :{{plural}} [:show] (:id user))]
       (dispatch
-       :html (-> (redirect-after-post location)
-                 (flash (t :messages.{{plural}}/created)))
+       :html (->> (redirect-after-post location)
+                  (flash (t [:{{plural}}.messages/created "{{singular}} created successfully."])))
        :json (->> (response/json {{singular}})
                   (created location))))
     (dispatch
@@ -54,12 +55,12 @@
   (change
    [id {{singular}}]
    (if-valid
-    ({{singular}}-validator {{singular}}) [{{singular}} errors]
+    (validate {{singular}}-validator {{singular}}) [{{singular}} errors]
     (do
       (model/update-fields id {{singular}})
       (dispatch
-       :html (-> (redirect (path-for :{{plural}} [:show] (:id {{singular}})))
-                 (flash (t :messages.{{plural}}/updated)))
+       :html (->> (redirect (path-for :{{plural}} [:show] id))
+                  (flash (t [:{{plural}}.messages/updated "{{singular}} updated successfully."])))
        :json response/empty))
     (dispatch
      :html (view/edit {{singular}} errors)
@@ -70,5 +71,5 @@
    (model/destroy id)
    (dispatch
     :html (-> (redirect (path-for :{{plural}} [:index]))
-              (flash (t :messages.{{plural}}/deleted)))
+              (flash (t [:{{plural}}.messages/deleted "{{singular}} deleted successfully."])))
     :json response/empty)))

@@ -1,4 +1,4 @@
-(defproject sebastiansen/grave "0.1.1-SNAPSHOT"
+(defproject sebastiansen/grave "0.1.2-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -14,5 +14,7 @@
                  [com.taoensso/tower "1.7.1"]
 
                  [ring-anti-forgery "0.2.1"]
+
+                 [clj-time "0.5.1"]
 
                  [lib-noir "0.6.6"]])

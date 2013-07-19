@@ -24,7 +24,7 @@
         (fn [h]
           (fn [r]
             (if-let [resource (handler r)]
-              (h (assoc-globals r {resource-name resource})))))
+              (h (assoc-in r [:params resource-name] resource)))))
         opts))
 
 (defn with-parse-route-params
