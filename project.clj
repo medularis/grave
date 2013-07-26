@@ -1,4 +1,4 @@
-(defproject sebastiansen/grave "0.1.2-SNAPSHOT"
+(defproject sebastiansen/grave "0.1.1-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -6,6 +6,8 @@
   :dependencies [[sebastiansen/rip "0.0.10"]
 
                  [sebastiansen/korma "0.3.1"]
+
+                 [sebastiansen/lobos "1.0.5-SNAPSHOT"]
 
                  [org.clojure/clojure "1.5.1"]
 

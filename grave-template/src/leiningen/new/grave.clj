@@ -18,7 +18,7 @@
              ["src/{{sanitized}}/handler.clj" (render "handler.clj" data)]
              ["src/{{sanitized}}/config.clj" (render "config.clj" data)]
              ["src/{{sanitized}}/globals.clj" (render "globals.clj" data)]
-             ["database.edn" (render "database.edn" data)]
+             ["resources/database.edn" (render "database.edn" data)]
              "resources/public"
              ;; i18n
              ["src/{{sanitized}}/i18n.clj" (render "i18n.clj" data)]

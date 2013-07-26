@@ -10,7 +10,10 @@
   (field :{{name}}{{#not-string?}} (parse-to :{{type}}){{/not-string?}}){{/fields}})
 
 (defresources {{plural}}
+
   (with-layout layouts/default)
+
+  (with-parse-route-params {:id :int})
 
   (with-find-resource
     (h [id] (model/find-one id))
@@ -23,17 +26,17 @@
     :html (view/index (model/all page per_page))
     :json (response/json (model/all page per_page))))
 
-  (new*
-   []
-   (dispatch
-    :html (view/new* (model/build))
-    :json (response/json (model/build))))
-
   (show
    [{{singular}}*]
    (dispatch
     :html (view/show {{singular}}*)
     :json (response/json {{singular}}*)))
+
+  (new*
+   []
+   (dispatch
+    :html (view/new* (model/build))
+    :json (response/json (model/build))))
 
   (make
    [{{singular}}]

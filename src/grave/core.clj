@@ -25,28 +25,20 @@
        'grave.util
        'hiccup.page
        'hiccup.element)
-  (case form-engine
-    :simple-form
-    (use 'clj-simple-form.form-scope
-         'clj-simple-form.input
-         'clj-simple-form.fields)
-    :simple-form-giddyup
-    (use 'clj-simple-form.giddyup
-         'clj-simple-form.input
-         'clj-simple-form.fields
-         '[clj-simple-form.form-scope :only (value-for error-for)])
-    (use 'hiccup.form
-         'clj-simple-form.form-scope
-         'clj-simple-form.input)))
+  (use 'clj-simple-form.giddyup
+       'clj-simple-form.input
+       'clj-simple-form.fields
+       '[hiccup.form :only (submit-button)]
+       '[clj-simple-form.form-scope :only (value-for error-for)]))
 
 (defn grave-handler
   "Create a handler for your app, passing a list of RIP's routes and the following optional middleware:
   - i18n
   - anti-forgery
 It includes compojure's site handler usign the same options map, see http://weavejester.github.io/compojure/compojure.handler.html."
-  [routes & [{:keys [middleware i18n? anti-forgery?] :as opts}]]
+  [routes & [{:keys [middleware i18n anti-forgery?] :as opts}]]
   (-> (apply routes-for routes)
-      (wrap-if i18n? wrap-i18n-middleware)
+      (wrap-if (:enabled i18n) wrap-i18n-middleware)
       (wrap-if anti-forgery? wrap-anti-forgery)
       (wrap-if middleware middleware)
       (site opts)))

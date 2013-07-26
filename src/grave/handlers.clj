@@ -18,6 +18,8 @@
   [scope & body]
   `(GET ~scope {:name :new :path "/new"} ~@body))
 
+;; Midleware
+
 (defn with-find-resource
   [scope handler resource-name & [opts]]
   (wrap scope
@@ -70,6 +72,8 @@
            (throw (Exception. "Parameter can't be nil"))))))
    opts))
 
+;; Responses
+
 (defmacro dispatch
   [& clauses]
   `(let [ctypes# (set
@@ -88,7 +92,7 @@
 
 (defn flash
   [value & [response]]
-  (-> (or response {:body ""})
+  (-> (or response {:status 201 :body ""})
       (assoc :flash value)))
 
 (defn unprocessable-entity

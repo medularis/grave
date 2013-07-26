@@ -16,7 +16,6 @@
     handler))
 
 (defmacro if->
-  ""
   [value pred & body]
   `(if-not ~pred
      ~value
